@@ -1,7 +1,6 @@
 package com.avocat.http_wizard.ui
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -14,16 +13,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.avocat.http_wizard.ui.bottomsheet.*
 import com.avocat.http_wizard.ui.component.ApiUrl
 import com.avocat.http_wizard.ui.component.BottomButton
+import com.avocat.http_wizard.ui.component.MadeBy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import okhttp3.Response
+import java.io.IOException
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -33,8 +32,12 @@ import kotlinx.coroutines.launch
 fun Main(
     apiUrlCallback: (String) -> Unit = {},
     methodChangedCallback: (String) -> Unit = {},
-    sendCallback: () -> Unit = {},
-    openTg: () -> Unit = {}
+    sendCallback: (
+        res: MutableState<Response?>,
+        onResponse: (r: Response) -> Unit,
+        onFailure: (e: IOException) -> Unit
+    ) -> Unit,
+    openTg: () -> Unit = {},
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed),
@@ -42,20 +45,24 @@ fun Main(
     val coroutineScope = rememberCoroutineScope()
     val currentSheet = remember { mutableStateOf("Query") }
 
+    val response: MutableState<Response?> = remember { mutableStateOf(null)}
+    val isCallState = remember { mutableStateOf(false) }
+
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
             Box(
                 modifier = Modifier
+                    .padding(12.dp)
                     .imePadding()
                     .navigationBarsPadding()
-                    .statusBarsPadding()
             ) {
                 when (currentSheet.value) {
                     "Query" -> Queries()
-                    "Body" -> ReqBody()
-                    "Response" -> Response()
+                    "Body" -> RequestBody()
+                    "Response" -> Response(response)
                     "Proxy" -> Proxy()
+                    "Error" -> ErrorSheet("error")
                 }
             }
         },
@@ -75,25 +82,7 @@ fun Main(
                 contentAlignment = Alignment.TopCenter,
                 modifier = Modifier.padding(8.dp)
             ) {
-                Row() {
-                    Text("made by")
-                    Text(
-                        " @ethosa",
-                        modifier = Modifier
-                            .clickable { openTg() }
-                            .graphicsLayer(alpha = 0.99f)
-                            .drawWithCache {
-                                val b = Brush.horizontalGradient(listOf(
-                                    Color(0xFF50D3E4), Color(0xFF3CF7C5)
-                                ))
-                                onDrawWithContent {
-                                    drawContent()
-                                    drawRect(b, blendMode = BlendMode.SrcAtop)
-                                }
-                            }
-                    )
-                    Text(" with ♥")
-                }
+                MadeBy(openTg)
             }
 
             Row(
@@ -108,51 +97,62 @@ fun Main(
                     Modifier.fillMaxWidth(0.85f),
                     apiUrlCallback,
                     methodChangedCallback,
-                    sendCallback = {
-                        sendCallback()
+                ) {
+                    if (!isCallState.value) {
+                        isCallState.value = true
+                        sendCallback(
+                            response, {
+                                response.value = it
+                                currentSheet.value = "Response"
+                                coroutineScope.launch {
+                                    bottomSheetScaffoldState.bottomSheetState.expand()
+                                }
+                                isCallState.value = false
+                            }, {
+                                response.value = null
+                                currentSheet.value = "Error"
+                                coroutineScope.launch {
+                                    bottomSheetScaffoldState.bottomSheetState.expand()
+                                }
+                                isCallState.value = false
+                            }
+                        )
                     }
-                )
+                }
             }
 
+            // Nav bar
             Box(
                 contentAlignment = Alignment.BottomCenter,
                 modifier = Modifier
-                    .statusBarsPadding()
+                    .fillMaxSize()
                     .imePadding()
+                    .statusBarsPadding()
                     .navigationBarsPadding()
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .wrapContentHeight()
-                        .clip(RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
+                        .imePadding()
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                        .clip(RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp))
                 ) {
-                    BottomButton(
-                        Modifier.weight(1f),
-                        currentSheet = currentSheet,
-                        text = "Query",
-                        icon = Icons.Outlined.QuestionMark,
-                        coroutineScope = coroutineScope,
-                        bottomSheetScaffoldState = bottomSheetScaffoldState
-                    )
-                    BottomButton(
-                        Modifier.weight(1f),
-                        currentSheet = currentSheet,
-                        text = "Proxy",
-                        icon = Icons.Outlined.Key,
-                        coroutineScope = coroutineScope,
-                        bottomSheetScaffoldState = bottomSheetScaffoldState
-                    )
-                    BottomButton(
-                        Modifier.weight(1f),
-                        currentSheet = currentSheet,
-                        text = "Body",
-                        icon = Icons.Outlined.Code,
-                        coroutineScope = coroutineScope,
-                        bottomSheetScaffoldState = bottomSheetScaffoldState
-                    )
+                    for (p: Pair<String, ImageVector> in listOf(
+                        Pair("Query", Icons.Outlined.QuestionMark),
+                        Pair("Proxy", Icons.Outlined.Key),
+                        Pair("Body", Icons.Outlined.Code)
+                    ))
+                        BottomButton(
+                            Modifier.weight(1f),
+                            currentSheet = currentSheet,
+                            text = p.first,
+                            icon = p.second,
+                            coroutineScope = coroutineScope,
+                            bottomSheetScaffoldState = bottomSheetScaffoldState
+                        )
                 }
             }
         }
@@ -171,61 +171,5 @@ fun openSheet(
         } else {
             bottomSheetScaffoldState.bottomSheetState.collapse()
         }
-    }
-}
-
-
-@Composable
-fun Queries() {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Text("query")
-        Text("query")
-        Text("query")
-        Text("query")
-        Text("query")
-        Text("query")
-        Text("query")
-    }
-}
-
-
-@Composable
-fun ReqBody() {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Text("body")
-        Text("body")
-        Text("body")
-        Text("body")
-        Text("body")
-        Text("body")
-        Text("body")
-    }
-}
-
-
-@Composable
-fun Response() {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Text("res")
-        Text("res")
-        Text("res")
-        Text("res")
-        Text("res")
-        Text("res")
-        Text("res")
-    }
-}
-
-
-@Composable
-fun Proxy() {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Text("proxy")
-        Text("res")
-        Text("res")
-        Text("res")
-        Text("res")
-        Text("res")
-        Text("res")
     }
 }

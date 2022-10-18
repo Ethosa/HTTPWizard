@@ -6,8 +6,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.core.view.WindowCompat
 import com.avocat.http_wizard.ui.Main
 import com.avocat.http_wizard.ui.theme.HEADWizardTheme
@@ -20,7 +20,6 @@ import java.io.IOException
 class MainActivity : ComponentActivity() {
     private var url = ""
     private var method = "POST"
-    private var res: Response? = null
 
     private val client = OkHttpClient()
 
@@ -32,8 +31,8 @@ class MainActivity : ComponentActivity() {
                 Main(
                     apiUrlCallback = { url = it },
                     methodChangedCallback = { method = it },
-                    sendCallback = { sendReq() },
-                    openTg = { openTg() }
+                    sendCallback = { x, y, z -> sendReq(x, y, z) },
+                    openTg = { openTg() },
                 )
             }
         }
@@ -50,7 +49,11 @@ class MainActivity : ComponentActivity() {
     /**
      * Builds and sends request
      */
-    private fun sendReq() {
+    private fun sendReq(
+            res: MutableState<Response?>,
+            onResponse: (r: Response) -> Unit = {},
+            onFailure: (e: IOException) -> Unit = {}
+    ) {
         // fix URL
         if (!url.endsWith('/') && !url.contains(Regex("[&?]")))
             url += '/'
@@ -67,11 +70,10 @@ class MainActivity : ComponentActivity() {
         client.newCall(req).enqueue(
             object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    res = null
+                    onFailure(e)
                 }
                 override fun onResponse(call: Call, response: Response) {
-                    println(response)
-                    res = response
+                    onResponse(response)
                 }
             }
         )
