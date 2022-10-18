@@ -68,6 +68,8 @@ fun Main(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
+                .imePadding()
         ) {
             Box(
                 contentAlignment = Alignment.TopCenter,
@@ -115,6 +117,7 @@ fun Main(
             Box(
                 contentAlignment = Alignment.BottomCenter,
                 modifier = Modifier
+                    .statusBarsPadding()
                     .imePadding()
                     .navigationBarsPadding()
             ) {
