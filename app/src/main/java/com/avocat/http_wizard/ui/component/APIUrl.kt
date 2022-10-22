@@ -1,5 +1,6 @@
 package com.avocat.http_wizard.ui.component
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -8,10 +9,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Api
-import androidx.compose.material.icons.outlined.Http
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,10 +25,11 @@ fun ApiUrl(
     modifier: Modifier = Modifier,
     apiUrlCallback: (String) -> Unit = {},
     methodChangedCallback: (String) -> Unit = {},
+    prefs: SharedPreferences,
     sendCallback: () -> Unit = {},
 ) {
-    val url = remember { mutableStateOf(TextFieldValue("")) }
-    val selected = remember { mutableStateOf("POST") }
+    val url = remember { mutableStateOf(TextFieldValue(prefs.getString("url", "").toString())) }
+    val selected = remember { mutableStateOf(prefs.getString("method", "POST").toString()) }
     val expanded = remember { mutableStateOf(false) }
     val list = listOf(
         "POST",

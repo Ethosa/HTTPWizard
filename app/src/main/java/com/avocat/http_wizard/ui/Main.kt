@@ -1,6 +1,6 @@
 package com.avocat.http_wizard.ui
 
-import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -14,6 +14,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.avocat.http_wizard.ui.bottomsheet.*
 import com.avocat.http_wizard.ui.component.ApiUrl
@@ -25,7 +27,6 @@ import okhttp3.Response
 import java.io.IOException
 
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
@@ -36,8 +37,10 @@ fun Main(
         res: MutableState<Response?>,
         onResponse: (r: Response) -> Unit,
         onFailure: (e: IOException) -> Unit
-    ) -> Unit,
+    ) -> Unit = { _, _, _ -> },
     openTg: () -> Unit = {},
+    proxyChanged: (hostname: String, port: String) -> Unit = { _, _ -> },
+    prefs: SharedPreferences
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed),
@@ -48,20 +51,21 @@ fun Main(
     val response: MutableState<Response?> = remember { mutableStateOf(null)}
     val isCallState = remember { mutableStateOf(false) }
 
+    val host = remember { mutableStateOf(TextFieldValue(prefs.getString("proxy", "").toString())) }
+    val port = remember { mutableStateOf(TextFieldValue(prefs.getString("port", "").toString())) }
+
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
             Box(
                 modifier = Modifier
                     .padding(12.dp)
-                    .imePadding()
-                    .navigationBarsPadding()
             ) {
                 when (currentSheet.value) {
                     "Query" -> Queries()
                     "Body" -> RequestBody()
                     "Response" -> Response(response)
-                    "Proxy" -> Proxy()
+                    "Proxy" -> Proxy(proxyChanged, host, port)
                     "Error" -> ErrorSheet("error")
                 }
             }
@@ -72,11 +76,7 @@ fun Main(
     ) {
         Surface(
             color = MaterialTheme.colors.background,
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .imePadding()
+            modifier = Modifier.fillMaxSize()
         ) {
             Box(
                 contentAlignment = Alignment.TopCenter,
@@ -88,15 +88,12 @@ fun Main(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .imePadding()
             ) {
                 ApiUrl(
                     Modifier.fillMaxWidth(0.85f),
                     apiUrlCallback,
                     methodChangedCallback,
+                    prefs,
                 ) {
                     if (!isCallState.value) {
                         isCallState.value = true
@@ -124,20 +121,12 @@ fun Main(
             // Nav bar
             Box(
                 contentAlignment = Alignment.BottomCenter,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .imePadding()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier
                         .wrapContentHeight()
-                        .imePadding()
-                        .statusBarsPadding()
-                        .navigationBarsPadding()
                         .clip(RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp))
                 ) {
                     for (p: Pair<String, ImageVector> in listOf(
@@ -166,10 +155,7 @@ fun openSheet(
     bottomSheetScaffoldState: BottomSheetScaffoldState
 ) {
     coroutineScope.launch {
-        if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+        if (bottomSheetScaffoldState.bottomSheetState.isCollapsed)
             bottomSheetScaffoldState.bottomSheetState.expand()
-        } else {
-            bottomSheetScaffoldState.bottomSheetState.collapse()
-        }
     }
 }
