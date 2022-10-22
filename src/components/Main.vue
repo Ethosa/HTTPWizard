@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 bg-back text-fore scrollbar items-center">
+  <div class="flex flex-col gap-4 bg-back text-fore scrollbar h-screen items-center p-8">
     <div
         class="desktop:text-7xl tablet:text-5xl mobile:text-3xl transition-all"
         data-aos="fade-in"
@@ -30,10 +30,10 @@
     </div>
 
     <div class="flex justify-center">
-      <div data-aos="slide-up" class="w-1/4 -mr-64 mt-20">
+      <div data-aos="slide-up" class="w-1/4 desktop:-mr-64 tablet:-mr-32 mobile:-mr-24 mt-20 transition-all">
         <img alt="main screen" class="phoneanim1 drop-shadow-3xl" src="/third.png" >
       </div>
-      <div data-aos="slide-up" data-aos-delay="400" class="w-1/4 -mr-64 mt-10">
+      <div data-aos="slide-up" data-aos-delay="400" class="w-1/4 desktop:-mr-64 tablet:-mr-32 mobile:-mr-24 mt-10 transition-all">
         <img alt="main screen" class="phoneanim2 drop-shadow-3xl" src="/second.png">
       </div>
       <div data-aos="slide-up" data-aos-delay="800" class="w-1/4 drop-shadow-3xl">
