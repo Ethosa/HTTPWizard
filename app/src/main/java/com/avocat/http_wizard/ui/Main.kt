@@ -34,10 +34,9 @@ fun Main(
     apiUrlCallback: (String) -> Unit = {},
     methodChangedCallback: (String) -> Unit = {},
     sendCallback: (
-        res: MutableState<Response?>,
         onResponse: (r: Response) -> Unit,
         onFailure: (e: IOException) -> Unit
-    ) -> Unit = { _, _, _ -> },
+    ) -> Unit = { _, _ -> },
     openTg: () -> Unit = {},
     proxyChanged: (hostname: String, port: String) -> Unit = { _, _ -> },
     prefs: SharedPreferences
@@ -98,7 +97,7 @@ fun Main(
                     if (!isCallState.value) {
                         isCallState.value = true
                         sendCallback(
-                            response, {
+                            {
                                 response.value = it
                                 currentSheet.value = "Response"
                                 coroutineScope.launch {

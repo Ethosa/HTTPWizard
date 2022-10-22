@@ -1,17 +1,14 @@
 package com.avocat.http_wizard
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.core.view.WindowCompat
 import com.avocat.http_wizard.ui.Main
 import com.avocat.http_wizard.ui.theme.HEADWizardTheme
 import okhttp3.*
@@ -64,12 +61,11 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-//            WindowCompat.setDecorFitsSystemWindows(window, false)
             HEADWizardTheme {
                 Main(
                     apiUrlCallback = { url = it },
                     methodChangedCallback = { method = it },
-                    sendCallback = { x, y, z -> sendReq(x, y, z) },
+                    sendCallback = { onResponse, onFailure -> sendReq(onResponse, onFailure) },
                     openTg = { openTg() },
                     proxyChanged = { hostname, port ->
                         proxy = hostname
@@ -94,7 +90,6 @@ class MainActivity : ComponentActivity() {
      * Builds and sends request
      */
     private fun sendReq(
-            res: MutableState<Response?>,
             onResponse: (r: Response) -> Unit = {},
             onFailure: (e: IOException) -> Unit = {}
     ) {
