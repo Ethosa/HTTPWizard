@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedPreferences = getSharedPreferences(BuildConfig.APPLICATION_ID, 0)
+        sharedPreferences = getSharedPreferences("avocat::httpwizard", 0)
         editor = sharedPreferences.edit()
 
         with(sharedPreferences) {
