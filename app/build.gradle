@@ -7,11 +7,14 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.avocat.head_wizard"
+        applicationId "com.avocat.http_wizard"
         minSdk 21
         targetSdk 33
         versionCode 1
-        versionName "0.2.2"
+        versionName "0.2.3"
+        ndk {
+            abiFilters 'armeabi-v7a','arm64-v8a','x86','x86_64'
+        }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -22,6 +25,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

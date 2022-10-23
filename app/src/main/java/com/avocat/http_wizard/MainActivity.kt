@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.avocat.http_wizard.ui.Main
 import com.avocat.http_wizard.ui.theme.HEADWizardTheme
@@ -20,6 +19,10 @@ import java.net.Proxy
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 class MainActivity : ComponentActivity() {
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
+    private var client = OkHttpClient()
+
     private var url = ""
         set(value) {
             editor.putString("url", value).apply()
@@ -41,11 +44,6 @@ class MainActivity : ComponentActivity() {
             editor.putString("port", value).apply()
             field = value
         }
-
-    private var client = OkHttpClient()
-
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var editor: SharedPreferences.Editor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
