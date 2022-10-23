@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 bg-back text-fore scrollbar h-screen items-center p-8">
+  <div class="flex flex-col gap-16 scrollbar h-full items-center">
     <div
         class="desktop:text-7xl tablet:text-5xl mobile:text-3xl transition-all"
         data-aos="fade-in"
@@ -14,31 +14,66 @@
       Little app for API testing made by
       <a class="tganim cursor-pointer" href="https://t.me/ethosa">@Ethosa</a>
       with <span class="tganim">♥</span>
-    </div>
-    <div class="flex justify-center text-back gap-2 flex-wrap desktop:text-xl tablet:text-base mobile:text-sm transition-all">
-      <span class="bg-red-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="650">GET</span>
-      <span class="bg-orange-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="600">POST</span>
-      <span class="bg-amber-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="550">PUT</span>
-      <span class="bg-yellow-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="500">PATCH</span>
-      <span class="bg-lime-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="450">DELETE</span>
-      <span class="bg-green-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="400">OPTIONS</span>
-      <span class="bg-emerald-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="450">UNLINK</span>
-      <span class="bg-teal-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="500">PURGE</span>
-      <span class="bg-cyan-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="550">LINK</span>
-      <span class="bg-sky-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="600">COPY</span>
-      <span class="bg-blue-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="650">HEAD</span>
+
+      <!-- methods -->
+      <div class="flex justify-center text-back gap-2 flex-wrap desktop:text-xl tablet:text-base mobile:text-sm transition-all">
+        <span class="bg-red-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="650">GET</span>
+        <span class="bg-orange-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="600">POST</span>
+        <span class="bg-amber-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="550">PUT</span>
+        <span class="bg-yellow-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="500">PATCH</span>
+        <span class="bg-lime-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="450">DELETE</span>
+        <span class="bg-green-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="400">OPTIONS</span>
+        <span class="bg-emerald-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="450">UNLINK</span>
+        <span class="bg-teal-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="500">PURGE</span>
+        <span class="bg-cyan-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="550">LINK</span>
+        <span class="bg-sky-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="600">COPY</span>
+        <span class="bg-blue-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="650">HEAD</span>
+      </div>
     </div>
 
+    <!-- Screenshots -->
     <div class="flex justify-center">
-      <div data-aos="slide-up" class="w-1/4 desktop:-mr-64 tablet:-mr-32 mobile:-mr-24 mt-20 transition-all">
+      <div
+          data-aos="fade-in"
+          class="desktop:w-1/3 tablet:w-1/3 mobile:w-1/2 desktop:-mr-64 tablet:-mr-32 mobile:-mr-24 desktop:mt-15 tablet:mt-15 mobile:mt-10 transition-all"
+      >
         <img alt="main screen" class="phoneanim1 drop-shadow-3xl" src="/third.png" >
       </div>
-      <div data-aos="slide-up" data-aos-delay="400" class="w-1/4 desktop:-mr-64 tablet:-mr-32 mobile:-mr-24 mt-10 transition-all">
+      <div
+          data-aos="fade-in"
+          data-aos-delay="400"
+          class="desktop:w-1/3 tablet:w-1/3 mobile:w-1/2 desktop:-mr-64 tablet:-mr-32 mobile:-mr-24 desktop:mt-20 tablet:mt-10 mobile:mt-5 transition-all"
+      >
         <img alt="main screen" class="phoneanim2 drop-shadow-3xl" src="/second.png">
       </div>
-      <div data-aos="slide-up" data-aos-delay="800" class="w-1/4 drop-shadow-3xl">
+      <div
+          data-aos="fade-in"
+          data-aos-delay="800"
+          class="desktop:w-1/3 tablet:w-1/3 mobile:w-1/2 drop-shadow-3xl"
+      >
         <img alt="main screen" class="phoneanim3" src="/first.png">
       </div>
+    </div>
+
+    <div class="flex flex-col gap-16 items-center w-full">
+      <span
+          class="w-2/3 text-end desktop:text-2xl tablet:text-xl mobile:text-lg"
+          data-aos="fade-right"
+      >
+        Available for Android on GitHub
+      </span>
+      <br>
+      <br>
+      <div class="hover:scale-110 active:scale-90 transition-all">
+        <a
+            class="relative px-8 py-2 w-fit desktop:text-3xl tablet:text-2xl mobile:text-xl text-back bg-fore rounded-md"
+            href="https://github.com/Ethosa/HTTPWizard/releases/download/v0.2.3/HTTPWizard_v0.2.3.apk"
+            data-aos="zoom-out"
+        >
+          Download now
+        </a>
+      </div>
+      <br>
     </div>
   </div>
 </template>

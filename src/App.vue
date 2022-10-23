@@ -1,5 +1,5 @@
 <template>
-  <div class="scrollbar">
+  <div class="scrollbar text-fore w-full h-screen p-8">
     <router-view/>
   </div>
 </template>
