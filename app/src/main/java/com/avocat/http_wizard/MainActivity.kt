@@ -7,7 +7,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.ExperimentalComposeUiApi
+import com.avocat.http_wizard.obj.Query
 import com.avocat.http_wizard.ui.Main
 import com.avocat.http_wizard.ui.theme.HEADWizardTheme
 import okhttp3.*
@@ -30,7 +32,6 @@ class MainActivity : ComponentActivity() {
         }
     private var method = "POST"
         set(value) {
-            println(method)
             editor.putString("method", value).apply()
             field = value
         }
@@ -42,6 +43,13 @@ class MainActivity : ComponentActivity() {
     private var proxyPort = "80"
         set(value) {
             editor.putString("port", value).apply()
+            field = value
+        }
+    private var queries = mutableStateListOf<Query>()
+        set(value) {
+            editor.putString(
+                "queries", value.joinToString("&")
+            )
             field = value
         }
 
@@ -69,6 +77,9 @@ class MainActivity : ComponentActivity() {
                         proxy = hostname
                         if (port != "")
                             proxyPort = port
+                    },
+                    queriesChanged = {
+                        queries = it
                     },
                     sharedPreferences
                 )

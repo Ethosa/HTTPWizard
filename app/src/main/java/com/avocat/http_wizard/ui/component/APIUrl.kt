@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Api
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,12 +24,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ApiUrl(
     modifier: Modifier = Modifier,
+    prefs: SharedPreferences,
+    url: MutableState<TextFieldValue>,
     apiUrlCallback: (String) -> Unit = {},
     methodChangedCallback: (String) -> Unit = {},
-    prefs: SharedPreferences,
     sendCallback: () -> Unit = {},
 ) {
-    val url = remember { mutableStateOf(TextFieldValue(prefs.getString("url", "").toString())) }
     val selected = remember { mutableStateOf(prefs.getString("method", "POST").toString()) }
     val expanded = remember { mutableStateOf(false) }
     val list = listOf(

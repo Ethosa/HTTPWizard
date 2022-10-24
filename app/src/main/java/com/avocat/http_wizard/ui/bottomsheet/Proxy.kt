@@ -38,7 +38,8 @@ fun Proxy(
             placeholder = { Text("Proxy host") },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Uri,
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
+                autoCorrect = false
             ),
             modifier = Modifier
                 .fillMaxWidth(),

@@ -1,6 +1,7 @@
 package com.avocat.http_wizard.ui
 
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -16,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.avocat.http_wizard.obj.Query
 import com.avocat.http_wizard.ui.bottomsheet.*
 import com.avocat.http_wizard.ui.component.ApiUrl
 import com.avocat.http_wizard.ui.component.BottomButton
@@ -38,6 +41,7 @@ fun Main(
     ) -> Unit = { _, _ -> },
     openTg: () -> Unit = {},
     proxyChanged: (hostname: String, port: String) -> Unit = { _, _ -> },
+    queriesChanged: (queries: SnapshotStateList<Query>) -> Unit = {},
     prefs: SharedPreferences
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -45,6 +49,7 @@ fun Main(
     )
     val coroutineScope = rememberCoroutineScope()
     val currentSheet = remember { mutableStateOf("Query") }
+    val url = remember { mutableStateOf(TextFieldValue(prefs.getString("url", "").toString())) }
 
     val response: MutableState<Response?> = remember { mutableStateOf(null)}
     val isCallState = remember { mutableStateOf(false) }
@@ -60,7 +65,13 @@ fun Main(
                     .padding(12.dp)
             ) {
                 when (currentSheet.value) {
-                    "Query" -> Queries()
+                    "Query" -> Queries(
+                        bottomSheetScaffoldState
+                    ) {
+                        queriesChanged(it)
+                        val newUrl = Uri.parse(url.value.text)
+                        println(newUrl.queryParameterNames)
+                    }
                     "Body" -> RequestBody()
                     "Response" -> Response(response)
                     "Proxy" -> Proxy(proxyChanged, host, port)
@@ -89,9 +100,10 @@ fun Main(
             ) {
                 ApiUrl(
                     Modifier.fillMaxWidth(0.85f),
+                    prefs,
+                    url,
                     apiUrlCallback,
                     methodChangedCallback,
-                    prefs,
                 ) {
                     if (!isCallState.value) {
                         isCallState.value = true
