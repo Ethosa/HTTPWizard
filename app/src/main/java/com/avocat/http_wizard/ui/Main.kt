@@ -1,12 +1,12 @@
 package com.avocat.http_wizard.ui
 
 import android.content.SharedPreferences
-import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.DataObject
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.runtime.*
@@ -23,6 +23,9 @@ import com.avocat.http_wizard.ui.bottomsheet.*
 import com.avocat.http_wizard.ui.component.ApiUrl
 import com.avocat.http_wizard.ui.component.BottomButton
 import com.avocat.http_wizard.ui.component.MadeBy
+import com.avocat.http_wizard.ui.theme.Background
+import com.avocat.http_wizard.util.rebuildQueries
+import com.avocat.http_wizard.util.rebuildUrl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.Response
@@ -42,6 +45,7 @@ fun Main(
     openTg: () -> Unit = {},
     proxyChanged: (hostname: String, port: String) -> Unit = { _, _ -> },
     queriesChanged: (queries: SnapshotStateList<Query>) -> Unit = {},
+    queryList: SnapshotStateList<Query>,
     prefs: SharedPreferences
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -49,7 +53,9 @@ fun Main(
     )
     val coroutineScope = rememberCoroutineScope()
     val currentSheet = remember { mutableStateOf("Query") }
+    // Load queries and URL
     val url = remember { mutableStateOf(TextFieldValue(prefs.getString("url", "").toString())) }
+    val queries = remember { queryList }
 
     val response: MutableState<Response?> = remember { mutableStateOf(null)}
     val isCallState = remember { mutableStateOf(false) }
@@ -66,16 +72,18 @@ fun Main(
             ) {
                 when (currentSheet.value) {
                     "Query" -> Queries(
-                        bottomSheetScaffoldState
+                        bottomSheetScaffoldState,
+                        queries,
                     ) {
+                        // Update text URL
                         queriesChanged(it)
-                        val newUrl = Uri.parse(url.value.text)
-                        println(newUrl.queryParameterNames)
+                        rebuildUrl(url, it)
                     }
                     "Body" -> RequestBody()
                     "Response" -> Response(response)
                     "Proxy" -> Proxy(proxyChanged, host, port)
                     "Error" -> ErrorSheet("error")
+                    "Headers" -> Headers()
                 }
             }
         },
@@ -84,7 +92,7 @@ fun Main(
         sheetShape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
     ) {
         Surface(
-            color = MaterialTheme.colors.background,
+            color = Background,
             modifier = Modifier.fillMaxSize()
         ) {
             Box(
@@ -102,7 +110,11 @@ fun Main(
                     Modifier.fillMaxWidth(0.85f),
                     prefs,
                     url,
-                    apiUrlCallback,
+                    {
+                        apiUrlCallback(it)
+                        if (bottomSheetScaffoldState.bottomSheetState.isCollapsed)
+                            rebuildQueries(url, queries)
+                    },
                     methodChangedCallback,
                 ) {
                     if (!isCallState.value) {
@@ -142,7 +154,8 @@ fun Main(
                     for (p: Pair<String, ImageVector> in listOf(
                         Pair("Query", Icons.Outlined.QuestionMark),
                         Pair("Proxy", Icons.Outlined.Key),
-                        Pair("Body", Icons.Outlined.Code)
+                        Pair("Body", Icons.Outlined.Code),
+                        Pair("Headers", Icons.Outlined.DataObject),
                     ))
                         BottomButton(
                             Modifier.weight(1f),

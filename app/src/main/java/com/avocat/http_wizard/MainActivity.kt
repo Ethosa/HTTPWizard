@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.text.input.TextFieldValue
 import com.avocat.http_wizard.obj.Query
 import com.avocat.http_wizard.ui.Main
 import com.avocat.http_wizard.ui.theme.HEADWizardTheme
@@ -46,12 +47,6 @@ class MainActivity : ComponentActivity() {
             field = value
         }
     private var queries = mutableStateListOf<Query>()
-        set(value) {
-            editor.putString(
-                "queries", value.joinToString("&")
-            )
-            field = value
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +59,12 @@ class MainActivity : ComponentActivity() {
             proxy = this.getString("proxy", "").toString()
             proxyPort = this.getString("port", "80").toString()
             url = this.getString("url", "").toString()
+            val uri = Uri.parse(url)
+            for (param in uri.queryParameterNames) {
+                queries.add(Query(
+                    TextFieldValue(param), TextFieldValue(uri.getQueryParameter(param).toString())
+                ))
+            }
         }
 
         setContent {
@@ -81,6 +82,7 @@ class MainActivity : ComponentActivity() {
                     queriesChanged = {
                         queries = it
                     },
+                    queries,
                     sharedPreferences
                 )
             }

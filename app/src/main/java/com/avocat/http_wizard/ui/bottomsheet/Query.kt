@@ -13,24 +13,28 @@ import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.avocat.http_wizard.obj.Query
 import kotlinx.coroutines.launch
 
 
+@ExperimentalComposeUiApi
 @SuppressLint("MutableCollectionMutableState")
 @ExperimentalMaterialApi
 @Composable
 fun Queries(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
-    onQueriesEdit: (q: SnapshotStateList<Query>) -> Unit = {}
+    queryList: SnapshotStateList<Query>,
+    onQueriesEdit: (q: SnapshotStateList<Query>) -> Unit = {},
 ) {
-    val queryList = remember { mutableStateListOf(Query()) }
     val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
 
     LazyColumn(
@@ -78,10 +82,12 @@ fun Queries(
                     keyboardActions = KeyboardActions(
                         onNext = {
                             focusManager.moveFocus(FocusDirection.Down)
+                            focusManager.moveFocus(FocusDirection.Left)
                         },
                         onDone = {
                             coroutineScope.launch {
                                 bottomSheetScaffoldState.bottomSheetState.collapse()
+                                keyboardController?.hide()
                             }
                         }
                     ),
