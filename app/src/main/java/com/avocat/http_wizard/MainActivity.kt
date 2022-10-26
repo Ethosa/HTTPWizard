@@ -15,6 +15,7 @@ import com.avocat.http_wizard.ui.Main
 import com.avocat.http_wizard.ui.theme.HEADWizardTheme
 import okhttp3.*
 import java.io.IOException
+import java.lang.Exception
 import java.net.InetSocketAddress
 import java.net.Proxy
 
@@ -24,29 +25,45 @@ import java.net.Proxy
 class MainActivity : ComponentActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    // client for request sending
     private var client = OkHttpClient()
 
+    // request URL
     private var url = ""
         set(value) {
             editor.putString("url", value).apply()
             field = value
         }
+    //request method
     private var method = "POST"
         set(value) {
             editor.putString("method", value).apply()
             field = value
         }
+    // request proxy host
     private var proxy = ""
         set(value) {
             editor.putString("proxy", value).apply()
             field = value
         }
+    // request proxy port
     private var proxyPort = "80"
         set(value) {
             editor.putString("port", value).apply()
             field = value
         }
+    // list of url queries
     private var queries = mutableStateListOf<Query>()
+    // list of request headers
+    private var headers = mutableStateListOf<Query>()
+        set(value) {
+            var s = setOf<String>()
+            for (i in value) {
+                s = s.plus(i.name.text + ":-:-:" + i.value.text)
+            }
+            editor.putStringSet("headers", s).apply()
+            field = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +76,28 @@ class MainActivity : ComponentActivity() {
             proxy = this.getString("proxy", "").toString()
             proxyPort = this.getString("port", "80").toString()
             url = this.getString("url", "").toString()
-            val uri = Uri.parse(url)
-            for (param in uri.queryParameterNames) {
-                queries.add(Query(
-                    TextFieldValue(param), TextFieldValue(uri.getQueryParameter(param).toString())
-                ))
+            val uri: Uri
+            try {
+                uri = Uri.parse(url)
+                for (param in uri.queryParameterNames) {
+                    queries.add(Query(
+                        TextFieldValue(param), TextFieldValue(uri.getQueryParameter(param).toString())
+                    ))
+                }
+            } catch (e: Exception) { }
+            val h = this.getStringSet("headers", setOf())?.toSet()
+            if (h != null) {
+                for (i in h) {
+                    val splitted = i.split(":-:-:")
+                    headers.add(Query(
+                        TextFieldValue(splitted[0]), TextFieldValue(splitted[1])
+                    ))
+                }
             }
+            if (queries.size == 0)
+                queries.add(Query())
+            if (headers.size == 0)
+                headers.add(Query())
         }
 
         setContent {
@@ -74,15 +107,19 @@ class MainActivity : ComponentActivity() {
                     methodChangedCallback = { method = it },
                     sendCallback = { onResponse, onFailure -> sendReq(onResponse, onFailure) },
                     openTg = { openTg() },
-                    proxyChanged = { hostname, port ->
+                    onProxyChanged = { hostname, port ->
                         proxy = hostname
                         if (port != "")
                             proxyPort = port
                     },
-                    queriesChanged = {
+                    onQueriesChanged = {
                         queries = it
                     },
+                    onHeadersChanged = {
+                        headers = it
+                    },
                     queries,
+                    headers,
                     sharedPreferences
                 )
             }

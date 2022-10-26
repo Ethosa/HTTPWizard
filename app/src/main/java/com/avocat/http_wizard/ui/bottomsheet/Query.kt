@@ -87,8 +87,8 @@ fun Queries(
                         onDone = {
                             coroutineScope.launch {
                                 bottomSheetScaffoldState.bottomSheetState.collapse()
-                                keyboardController?.hide()
                             }
+                            keyboardController?.hide()
                         }
                     ),
                     modifier = Modifier

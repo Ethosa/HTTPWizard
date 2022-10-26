@@ -43,9 +43,11 @@ fun Main(
         onFailure: (e: IOException) -> Unit
     ) -> Unit = { _, _ -> },
     openTg: () -> Unit = {},
-    proxyChanged: (hostname: String, port: String) -> Unit = { _, _ -> },
-    queriesChanged: (queries: SnapshotStateList<Query>) -> Unit = {},
+    onProxyChanged: (hostname: String, port: String) -> Unit = { _, _ -> },
+    onQueriesChanged: (queries: SnapshotStateList<Query>) -> Unit = {},
+    onHeadersChanged: (headers: SnapshotStateList<Query>) -> Unit = {},
     queryList: SnapshotStateList<Query>,
+    headersList: SnapshotStateList<Query>,
     prefs: SharedPreferences
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -56,6 +58,7 @@ fun Main(
     // Load queries and URL
     val url = remember { mutableStateOf(TextFieldValue(prefs.getString("url", "").toString())) }
     val queries = remember { queryList }
+    val headers = remember { headersList }
 
     val response: MutableState<Response?> = remember { mutableStateOf(null)}
     val isCallState = remember { mutableStateOf(false) }
@@ -76,14 +79,19 @@ fun Main(
                         queries,
                     ) {
                         // Update text URL
-                        queriesChanged(it)
+                        onQueriesChanged(it)
                         rebuildUrl(url, it)
                     }
                     "Body" -> RequestBody()
                     "Response" -> Response(response)
-                    "Proxy" -> Proxy(proxyChanged, host, port)
+                    "Proxy" -> Proxy(onProxyChanged, host, port)
                     "Error" -> ErrorSheet("error")
-                    "Headers" -> Headers()
+                    "Headers" -> Headers(
+                        bottomSheetScaffoldState,
+                        headers
+                    ) {
+                        onHeadersChanged(it)
+                    }
                 }
             }
         },
