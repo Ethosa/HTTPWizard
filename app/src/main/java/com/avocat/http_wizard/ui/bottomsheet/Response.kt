@@ -11,7 +11,6 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.fasterxml.jackson.databind.ObjectMapper
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +18,9 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import com.avocat.http_wizard.ui.component.RichText
+import com.avocat.http_wizard.ui.theme.Background
+import com.avocat.http_wizard.util.Prettier
 import okhttp3.Response
 
 
@@ -30,11 +32,11 @@ fun Response(res: MutableState<Response?>) {
     val clipboardManager = LocalClipboardManager.current
     val ctx = LocalContext.current
 
-    val prettyJsonString = ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(data)
+    val prettyJsonString = Prettier.jsonString(data.value)
 
     LazyColumn {
         item {
-            Text(prettyJsonString)
+            RichText(prettyJsonString)
         }
     }
 
@@ -45,7 +47,7 @@ fun Response(res: MutableState<Response?>) {
             .fillMaxSize()
     ) {
         Surface(
-            color = MaterialTheme.colors.background,
+            color = Background,
             shape = MaterialTheme.shapes.small,
         ) {
             IconButton(
