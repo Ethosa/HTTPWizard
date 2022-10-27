@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-16 scrollbar h-full items-center">
+  <div class="flex flex-col gap-16 scrollbar items-center">
     <div
         class="desktop:text-7xl tablet:text-5xl mobile:text-3xl transition-all"
         data-aos="fade-in"
@@ -16,7 +16,7 @@
       with <span class="tganim">♥</span>
 
       <!-- methods -->
-      <div class="flex justify-center text-back gap-2 flex-wrap desktop:text-xl tablet:text-base mobile:text-sm transition-all">
+      <div class="flex mt-4 justify-center text-back gap-2 flex-wrap desktop:text-xl tablet:text-base mobile:text-sm transition-all">
         <span class="bg-red-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="650">GET</span>
         <span class="bg-orange-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="600">POST</span>
         <span class="bg-amber-200 px-4 rounded-full" data-aos="fade-in" data-aos-delay="550">PUT</span>
