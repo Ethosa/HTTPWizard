@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import com.avocat.http_wizard.ui.component.RichTextField
 
 
 @Composable
@@ -52,7 +53,7 @@ fun RequestBody(
         ) {
             item {
                 when (headersState) {
-                    "Raw" -> RawEditor(textVal, rawState)
+                    "Raw" -> RichTextField(value = textVal)
                 }
             }
         }
