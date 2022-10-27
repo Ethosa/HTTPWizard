@@ -33,9 +33,9 @@
 
     <!-- Screenshots -->
     <div class="flex justify-center">
-      <img alt="main screen" class="h-max phoneanim1" src="/third.png" >
-      <img alt="main screen" class="desktop:-ml-64 tablet:-ml-32 mobile:-ml-16 h-max mt-16 phoneanim2 drop-shadow-md" src="/second.png">
-      <img alt="main screen" class="desktop:-ml-64 tablet:-ml-32 mobile:-ml-16 h-max phoneanim3 drop-shadow-md" src="/first.png">
+      <img alt="main screen" class="w-1/3 h-max phoneanim1" src="/third.png" >
+      <img alt="main screen" class="desktop:-ml-64 tablet:-ml-32 mobile:-ml-16 w-1/3 h-max mt-16 phoneanim2 drop-shadow-md" src="/second.png">
+      <img alt="main screen" class="desktop:-ml-64 tablet:-ml-32 mobile:-ml-16 w-1/3 h-max phoneanim3 drop-shadow-md" src="/first.png">
     </div>
 
     <div class="flex flex-col gap-16 items-center w-full">
