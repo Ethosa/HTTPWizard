@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import com.avocat.http_wizard.ui.openSheet
+import com.avocat.http_wizard.ui.theme.Typography
 import kotlinx.coroutines.CoroutineScope
 
 
@@ -42,7 +43,7 @@ fun BottomButton(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(icon, null, Modifier.size(28.dp, 28.dp))
-            Text(text)
+            Text(text, fontSize = Typography.h4.fontSize)
         }
     }
 }

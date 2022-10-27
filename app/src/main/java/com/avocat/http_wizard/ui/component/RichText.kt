@@ -12,9 +12,9 @@ enum class RichTextType {
 }
 
 val JSONTokens = listOf(
-    Pair(Regex("[{}]"), Color.Green),
-    Pair(Regex("\\d+"), Color.Yellow),
-    Pair(Regex("\"[\"]+?\""), Color.Magenta)
+    Pair(Regex("[{}\\]\\[]"), Color(0xFF27c93f)),
+    Pair(Regex("\\d+"), Color(0xFFff5f56)),
+    Pair(Regex("\"[^\"]+?\""), Color(0xFFffbd2e))
 )
 
 @Composable
@@ -26,7 +26,7 @@ fun RichText(
         var i = 0
         var result: MatchResult?
 
-        while (i < src.length-1) {
+        while (i < src.length) {
             var isMatched = false
             for (token in JSONTokens) {
                 result = token.first.matchAt(src, i)
@@ -34,7 +34,6 @@ fun RichText(
                     append(AnnotatedString(src.substring(result.range), SpanStyle(token.second)))
                     isMatched = true
                     i += result.range.last+1 - result.range.first
-                    println(i)
                     break
                 }
             }
