@@ -23,13 +23,18 @@ fun RichText(
     src: String,
     type: RichTextType = RichTextType.JSON
 ) {
+    val tokens =
+        when (type) {
+            RichTextType.JSON -> JSONTokens
+        }
+
     Text(buildAnnotatedString {
         var i = 0
         var result: MatchResult?
 
         while (i < src.length) {
             var isMatched = false
-            for (token in JSONTokens) {
+            for (token in tokens) {
                 result = token.first.matchAt(src, i)
                 if (result != null) {
                     append(AnnotatedString(src.substring(result.range), SpanStyle(token.second)))
