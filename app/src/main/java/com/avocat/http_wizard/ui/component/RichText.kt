@@ -14,7 +14,8 @@ enum class RichTextType {
 val JSONTokens = listOf(
     Pair(Regex("[{}\\]\\[]"), Color(0xFF27c93f)),
     Pair(Regex("\\d+"), Color(0xFFff5f56)),
-    Pair(Regex("\"[^\"]+?\""), Color(0xFFffbd2e))
+    Pair(Regex("\"[^\"]+?\""), Color(0xFFffbd2e)),
+    Pair(Regex("(true|false|null)"), Color(0xFF995258))
 )
 
 @Composable
