@@ -33,26 +33,9 @@
 
     <!-- Screenshots -->
     <div class="flex justify-center">
-      <div
-          data-aos="fade-in"
-          class="desktop:w-1/3 tablet:w-1/3 mobile:w-1/2 desktop:-mr-64 tablet:-mr-32 mobile:-mr-24 desktop:mt-15 tablet:mt-15 mobile:mt-10 transition-all"
-      >
-        <img alt="main screen" class="phoneanim1 drop-shadow-3xl" src="/third.png" >
-      </div>
-      <div
-          data-aos="fade-in"
-          data-aos-delay="400"
-          class="desktop:w-1/3 tablet:w-1/3 mobile:w-1/2 desktop:-mr-64 tablet:-mr-32 mobile:-mr-24 desktop:mt-20 tablet:mt-10 mobile:mt-5 transition-all"
-      >
-        <img alt="main screen" class="phoneanim2 drop-shadow-3xl" src="/second.png">
-      </div>
-      <div
-          data-aos="fade-in"
-          data-aos-delay="800"
-          class="desktop:w-1/3 tablet:w-1/3 mobile:w-1/2 drop-shadow-3xl"
-      >
-        <img alt="main screen" class="phoneanim3" src="/first.png">
-      </div>
+      <img alt="main screen" class="h-max phoneanim1" src="/third.png" >
+      <img alt="main screen" class="desktop:-ml-64 tablet:-ml-32 mobile:-ml-16 h-max mt-16 phoneanim2 drop-shadow-md" src="/second.png">
+      <img alt="main screen" class="desktop:-ml-64 tablet:-ml-32 mobile:-ml-16 h-max phoneanim3 drop-shadow-md" src="/first.png">
     </div>
 
     <div class="flex flex-col gap-16 items-center w-full">
