@@ -41,10 +41,16 @@ fun RequestBody(
                     expanded = dropdownState,
                     onDismissRequest = { dropdownState = false }
                 ) {
-                    DropdownMenuItem(onClick = { rawState = "Text" }) { Text("Text") }
-                    DropdownMenuItem(onClick = { rawState = "JSON" }) { Text("JSON") }
-                    DropdownMenuItem(onClick = { rawState = "XML" }) { Text("XML") }
-                    DropdownMenuItem(onClick = { rawState = "HTML" }) { Text("HTML") }
+                    for (i in listOf("Text", "JSON", "XML", "HTML")) {
+                        DropdownMenuItem(
+                            onClick = {
+                                rawState = "Text"
+                                dropdownState = false
+                            }
+                        ) {
+                            Text("Text")
+                        }
+                    }
                 }
             }
         }
@@ -53,24 +59,20 @@ fun RequestBody(
         ) {
             item {
                 when (headersState) {
-                    "Raw" -> RichTextField(value = textVal)
+                    "Raw" -> {
+                        when (rawState) {
+                            "Text" -> OutlinedTextField(
+                                value = textVal.value,
+                                onValueChange = {
+                                    textVal.value = it
+                                },
+                                label = { Text("Text") }
+                            )
+                            "JSON" -> RichTextField(value = textVal)
+                        }
+                    }
                 }
             }
         }
     }
-}
-
-
-@Composable
-fun RawEditor(
-    textVal: MutableState<TextFieldValue>,
-    rawState: String
-) {
-    OutlinedTextField(
-        value = textVal.value,
-        onValueChange = { textVal.value = it },
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text(rawState) },
-        placeholder = { Text("Edit ...") },
-    )
 }
