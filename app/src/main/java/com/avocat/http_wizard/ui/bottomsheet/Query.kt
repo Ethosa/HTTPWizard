@@ -16,6 +16,7 @@ fun QueriesBottomSheet(
     queryList: SnapshotStateList<Query>,
     onQueriesEdit: (q: SnapshotStateList<Query>) -> Unit = {},
 ) {
+    Text("Queries")
     Queries(
         bottomSheetScaffoldState = bottomSheetScaffoldState,
         queryList = queryList,

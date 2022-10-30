@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import com.avocat.http_wizard.obj.FormField
 import com.avocat.http_wizard.obj.Query
+import com.avocat.http_wizard.ui.component.FormData
 import com.avocat.http_wizard.ui.component.Queries
 import com.avocat.http_wizard.ui.component.RichTextField
 import com.avocat.http_wizard.util.HighLighter
@@ -25,7 +27,9 @@ import com.avocat.http_wizard.util.HighLighter
 fun RequestBody(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     formUrlencoded: SnapshotStateList<Query>,
-    onFormUrlencodedEdit: (headers: SnapshotStateList<Query>) -> Unit = {}
+    formData: SnapshotStateList<FormField>,
+    onFormUrlencodedEdit: (headers: SnapshotStateList<Query>) -> Unit = {},
+    onFormDataChanged: (headers: SnapshotStateList<FormField>) -> Unit = {},
 ) {
     var headersState by remember { mutableStateOf("raw") }
     var rawState by remember { mutableStateOf("Text") }
@@ -112,13 +116,17 @@ fun RequestBody(
                 }
                 "x-www-form-urlencoded" -> {
                     Queries(
-                        bottomSheetScaffoldState = bottomSheetScaffoldState,
-                        queryList = formUrlencoded,
-                        onQueriesEdit = onFormUrlencodedEdit
+                        bottomSheetScaffoldState,
+                        formUrlencoded,
+                        onFormUrlencodedEdit
                     )
                 }
                 "form-data" -> {
-
+                    FormData(
+                        bottomSheetScaffoldState,
+                        formData,
+                        onFormDataChanged
+                    )
                 }
             }
         }

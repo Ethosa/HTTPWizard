@@ -41,9 +41,6 @@ fun Queries(
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item {
-            Text("Queries")
-        }
         itemsIndexed(queryList) { idx, x ->
             Row(
                 verticalAlignment = Alignment.CenterVertically

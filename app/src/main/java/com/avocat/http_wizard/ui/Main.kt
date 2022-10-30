@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.avocat.http_wizard.obj.FormField
 import com.avocat.http_wizard.obj.Query
 import com.avocat.http_wizard.ui.bottomsheet.*
 import com.avocat.http_wizard.ui.component.ApiUrl
@@ -47,9 +48,11 @@ fun Main(
     onQueriesChanged: (queries: SnapshotStateList<Query>) -> Unit = {},
     onHeadersChanged: (headers: SnapshotStateList<Query>) -> Unit = {},
     onFormUrlencodedChanged: (formUrlencoded: SnapshotStateList<Query>) -> Unit = {},
+    onFormDataChanged: (formData: SnapshotStateList<FormField>) -> Unit = {},
     queryList: SnapshotStateList<Query>,
     headersList: SnapshotStateList<Query>,
     formUrlencodedList: SnapshotStateList<Query>,
+    formData: SnapshotStateList<FormField>,
     prefs: SharedPreferences
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -87,10 +90,14 @@ fun Main(
                     }
                     "Body" -> RequestBody(
                         bottomSheetScaffoldState,
-                        formUrlencoded
-                    ) {
-                        onFormUrlencodedChanged(it)
-                    }
+                        formUrlencoded,
+                        formData,
+                        {
+                            onFormUrlencodedChanged(it)
+                        }, {
+                            onFormDataChanged(it)
+                        }
+                    )
                     "Response" -> Response(response)
                     "Proxy" -> Proxy(onProxyChanged, host, port)
                     "Error" -> ErrorSheet("error")

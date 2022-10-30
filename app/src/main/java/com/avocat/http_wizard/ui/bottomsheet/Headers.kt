@@ -15,6 +15,7 @@ fun Headers(
     headers: SnapshotStateList<Query>,
     onHeadersEdit: (headers: SnapshotStateList<Query>) -> Unit = {}
 ) {
+    Text("Headers")
     Queries(
         bottomSheetScaffoldState = bottomSheetScaffoldState,
         queryList = headers,

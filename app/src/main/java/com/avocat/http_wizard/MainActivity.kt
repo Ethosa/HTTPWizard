@@ -10,6 +10,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.text.input.TextFieldValue
+import com.avocat.http_wizard.obj.FormField
 import com.avocat.http_wizard.obj.Query
 import com.avocat.http_wizard.ui.Main
 import com.avocat.http_wizard.ui.theme.HEADWizardTheme
@@ -74,6 +75,10 @@ class MainActivity : ComponentActivity() {
             editor.putStringSet("x-www-form-urlencoded", s).apply()
             field = value
         }
+    private var formData = mutableStateListOf<FormField>()
+        set(value) {
+            field = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,6 +115,8 @@ class MainActivity : ComponentActivity() {
                 headers.add(Query())
             if (formUrlencoded.size == 0)
                 formUrlencoded.add(Query())
+            if (formData.size == 0)
+                formData.add(FormField())
         }
 
         setContent {
@@ -133,9 +140,13 @@ class MainActivity : ComponentActivity() {
                     onFormUrlencodedChanged = {
                         formUrlencoded = it
                     },
+                    onFormDataChanged = {
+                        formData = it
+                    },
                     queries,
                     headers,
                     formUrlencoded,
+                    formData,
                     sharedPreferences
                 )
             }
