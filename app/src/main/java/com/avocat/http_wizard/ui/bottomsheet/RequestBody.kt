@@ -4,73 +4,121 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import com.avocat.http_wizard.obj.Query
+import com.avocat.http_wizard.ui.component.Queries
 import com.avocat.http_wizard.ui.component.RichTextField
+import com.avocat.http_wizard.util.HighLighter
 
 
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
 @Composable
 fun RequestBody(
-
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
+    formUrlencoded: SnapshotStateList<Query>,
+    onFormUrlencodedEdit: (headers: SnapshotStateList<Query>) -> Unit = {}
 ) {
-    var headersState by remember { mutableStateOf("Raw") }
+    var headersState by remember { mutableStateOf("raw") }
     var rawState by remember { mutableStateOf("Text") }
     var dropdownState by remember { mutableStateOf(false) }
-    val textVal = remember { mutableStateOf(TextFieldValue("")) }
+    var dropdownTypeState by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val rawValue = remember { mutableStateOf(TextFieldValue("")) }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Request body")
         Row(
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(onClick = { headersState = "Raw" }) { Text("Raw") }
-            Button(onClick = { dropdownState = true }, colors = ButtonDefaults.outlinedButtonColors()) {
+            Button(onClick = { dropdownTypeState = true }, colors = ButtonDefaults.outlinedButtonColors()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    Text(rawState)
+                    Text(headersState)
                     Icon(Icons.Outlined.ArrowDropDown, null)
                 }
                 DropdownMenu(
-                    expanded = dropdownState,
-                    onDismissRequest = { dropdownState = false }
+                    expanded = dropdownTypeState,
+                    onDismissRequest = { dropdownTypeState = false }
                 ) {
-                    for (i in listOf("Text", "JSON", "XML", "HTML")) {
+                    for (i in listOf("form-data", "x-www-form-urlencoded", "raw")) {
                         DropdownMenuItem(
                             onClick = {
-                                rawState = "Text"
-                                dropdownState = false
+                                headersState = i
+                                dropdownTypeState = false
                             }
                         ) {
-                            Text("Text")
+                            Text(i)
                         }
                     }
                 }
             }
-        }
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            item {
-                when (headersState) {
-                    "Raw" -> {
-                        when (rawState) {
-                            "Text" -> OutlinedTextField(
-                                value = textVal.value,
-                                onValueChange = {
-                                    textVal.value = it
-                                },
-                                label = { Text("Text") }
-                            )
-                            "JSON" -> RichTextField(value = textVal)
+            if (headersState == "raw")
+                Button(onClick = { dropdownState = true }, colors = ButtonDefaults.outlinedButtonColors()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text(rawState)
+                        Icon(Icons.Outlined.ArrowDropDown, null)
+                    }
+                    DropdownMenu(
+                        expanded = dropdownState,
+                        onDismissRequest = { dropdownState = false }
+                    ) {
+                        for (i in listOf("Text", "JSON", "XML", "HTML")) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    rawState = i
+                                    dropdownState = false
+                                }
+                            ) {
+                                Text(i)
+                            }
                         }
                     }
+                }
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            when (headersState) {
+                "raw" -> {
+                    when (rawState) {
+                        "Text" -> OutlinedTextField(
+                            value = rawValue.value,
+                            onValueChange = {
+                                rawValue.value = it
+                            },
+                            label = { Text("Text") }
+                        )
+                        "JSON" -> RichTextField(value = rawValue)
+                        "XML" -> RichTextField(value = rawValue, syntax = HighLighter.Syntax.XML)
+                    }
+                }
+                "x-www-form-urlencoded" -> {
+                    Queries(
+                        bottomSheetScaffoldState = bottomSheetScaffoldState,
+                        queryList = formUrlencoded,
+                        onQueriesEdit = onFormUrlencodedEdit
+                    )
+                }
+                "form-data" -> {
+
                 }
             }
         }

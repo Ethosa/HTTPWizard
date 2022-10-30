@@ -64,6 +64,16 @@ class MainActivity : ComponentActivity() {
             editor.putStringSet("headers", s).apply()
             field = value
         }
+    // list of x-www-form-urlencoded
+    private var formUrlencoded = mutableStateListOf<Query>()
+        set(value) {
+            var s = setOf<String>()
+            for (i in value) {
+                s = s.plus(i.name.text + ":-:-:" + i.value.text)
+            }
+            editor.putStringSet("x-www-form-urlencoded", s).apply()
+            field = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +108,8 @@ class MainActivity : ComponentActivity() {
                 queries.add(Query())
             if (headers.size == 0)
                 headers.add(Query())
+            if (formUrlencoded.size == 0)
+                formUrlencoded.add(Query())
         }
 
         setContent {
@@ -118,8 +130,12 @@ class MainActivity : ComponentActivity() {
                     onHeadersChanged = {
                         headers = it
                     },
+                    onFormUrlencodedChanged = {
+                        formUrlencoded = it
+                    },
                     queries,
                     headers,
+                    formUrlencoded,
                     sharedPreferences
                 )
             }

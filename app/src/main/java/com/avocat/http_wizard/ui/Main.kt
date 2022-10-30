@@ -46,8 +46,10 @@ fun Main(
     onProxyChanged: (hostname: String, port: String) -> Unit = { _, _ -> },
     onQueriesChanged: (queries: SnapshotStateList<Query>) -> Unit = {},
     onHeadersChanged: (headers: SnapshotStateList<Query>) -> Unit = {},
+    onFormUrlencodedChanged: (formUrlencoded: SnapshotStateList<Query>) -> Unit = {},
     queryList: SnapshotStateList<Query>,
     headersList: SnapshotStateList<Query>,
+    formUrlencodedList: SnapshotStateList<Query>,
     prefs: SharedPreferences
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -59,6 +61,7 @@ fun Main(
     val url = remember { mutableStateOf(TextFieldValue(prefs.getString("url", "").toString())) }
     val queries = remember { queryList }
     val headers = remember { headersList }
+    val formUrlencoded = remember { formUrlencodedList }
 
     val response: MutableState<Response?> = remember { mutableStateOf(null)}
     val isCallState = remember { mutableStateOf(false) }
@@ -74,7 +77,7 @@ fun Main(
                     .padding(12.dp)
             ) {
                 when (currentSheet.value) {
-                    "Query" -> Queries(
+                    "Query" -> QueriesBottomSheet(
                         bottomSheetScaffoldState,
                         queries,
                     ) {
@@ -82,7 +85,12 @@ fun Main(
                         onQueriesChanged(it)
                         rebuildUrl(url, it)
                     }
-                    "Body" -> RequestBody()
+                    "Body" -> RequestBody(
+                        bottomSheetScaffoldState,
+                        formUrlencoded
+                    ) {
+                        onFormUrlencodedChanged(it)
+                    }
                     "Response" -> Response(response)
                     "Proxy" -> Proxy(onProxyChanged, host, port)
                     "Error" -> ErrorSheet("error")

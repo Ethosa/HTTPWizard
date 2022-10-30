@@ -7,7 +7,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 
 class HighLighter {
     enum class Syntax {
-        JSON
+        JSON,
+        XML
     }
 
     companion object {
@@ -16,6 +17,15 @@ class HighLighter {
             Pair(Regex("\\d+"), Color(0xFFff5f56)),
             Pair(Regex("\"[^\"]+?\""), Color(0xFFffbd2e)),
             Pair(Regex("(true|false|null)"), Color(0xFF995258))
+        )
+
+        private val XMLTokens = listOf(
+            Pair(Regex("\"[^\"]+?\""), Color(0xFFffbd2e)),  // strings
+            Pair(Regex("<\\s*\\S+\\s*>"), Color(0xFF995258)),  // opened tags
+            Pair(Regex("<\\s*\\S+\\s*"), Color(0xFF995258)),  // opened tags
+            Pair(Regex("</\\s*\\S+\\s*>"), Color(0xFF995258)),  // closed tags
+            Pair(Regex("[<>/]"), Color(0xFF995258)),  // tags
+            Pair(Regex("\\S+?="), Color(0xFF27c93f)),  // tags
         )
 
         private fun highlightString(
@@ -47,8 +57,9 @@ class HighLighter {
         }
 
         fun highlightString(src: String, syntax: Syntax): AnnotatedString {
-            when(syntax) {
-                Syntax.JSON -> return highlightString(src, JSONTokens)
+            return when(syntax) {
+                Syntax.JSON -> highlightString(src, JSONTokens)
+                Syntax.XML -> highlightString(src, XMLTokens)
             }
         }
     }
